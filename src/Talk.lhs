@@ -1,27 +1,20 @@
-% Slides in Literate Haskell with Pandoc
+% Adjoint Functors
 % Dom De Re
-% 7 July, 2014
+% 21 October, 2015
 
-Slides in Literate Haskell
-==========================
+Motivation
+==========
 
-Module Header
+Isomorphisms
+------------
 
-We want the module header to get compiled, but we dont want it to appear in the slides.
+Awesome.
 
-If the slides are marked up with `pandoc`, we can use the `--slide-level` parameter to set the slide level to 2.
-
-This means level 1 headers form title slides and any content following them is ignored, only content following level 2 headers is included.
-
->   module Talk where
-
-In **reveal.js** slides, this will also mean that level 1 headers build slides horizontally, while level 2 headers build slides vertically..
-
-Pandoc
-======
-
-You will need Pandoc
---------------------
+-   Learn about `X`
+-   Learn about `Y`
+-   Feel a little bit of deja vu.
+-   You wasted time learning the same thing twice.
+-   Mind blown though.
 
 [**Pandoc**] [pandoc] gets the Literate Haskell source file (or Markdown file) and marks it up into slides.
 
