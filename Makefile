@@ -1,7 +1,7 @@
 SHELL := bash
 
 pandoc := pandoc
-slide_src := src/Talk.lhs
+slide_src := src/Talk.md
 
 # reveal.js parameters
 reveal_js_output := revealjs/index.html
