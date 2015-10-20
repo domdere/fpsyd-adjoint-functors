@@ -87,11 +87,83 @@ Definitions
 Quickly
 -------
 
--   Categories
--   Initial and Final objects
--   Functors
--   Naturality
+-   [Categories](https://en.wikipedia.org/wiki/Category_(mathematics))
+-   [Initial and Final objects](https://en.wikipedia.org/wiki/Initial_and_terminal_objects)
+-   [Functors](https://en.wikipedia.org/wiki/Functor)
+-   [Naturality](https://en.wikipedia.org/wiki/Natural_transformation)
 
 Universal Properties
 --------------------
 
+-   A *universal property* defines what it means for a construction to be the "most efficient" solution to a problem.
+
+-   Comes in two flavours:
+    -   Initial Properties
+    -   Terminal properties
+-   They are dual, so usually only discussion of one is necessary,
+just reverse the arrows for the other.
+
+Initial Property
+----------------
+
+`C, D` categories, `U: D -> C` , let `X ∈ Obj(C)`
+
+An *initial morphism* is a pair `(A, φ)` where `A ∈ Obj(D)` and `φ: X -> U(A)` then `∀Y ∈ Obj(D)` and `f: X -> U(Y)`, there exists a **unique** `g: A -> Y` such that the following diagram commutes:
+
+------------
+
+![An initial property](./assets/universal-prop.png)
+
+Examples
+--------
+
+Coproducts
+----------
+
+![The initial property for products](./assets/coproduct-initial-property.png)
+
+Products
+--------
+
+![The terminal property for products](./assets/product-terminal-property.png)
+
+Efficiency
+----------
+
+What makes `(A, φ)` so efficient?
+
+-   The fact that `g` exists at all implies that `(A, φ)` is general enough for all `(Y, f)`.
+-   The fact that `g` is unique implies that `(A, φ)` is not too general
+
+The existence and uniqueness mean that `f` **uniquely factorises** like so: `f = U(g).φ`, so rather than analyse `f: X -> U(Y)`, we can look at `g: A -> Y` which could be a lot simpler.
+
+Adjunctions
+-----------
+
+-   An efficient solution is great, whats even **better** is if it is *formulaic*, i.e for *every* `X` in the diagram, I can construct an `(A = F(X), φ)`.
+
+-   Then my solution is not only *efficient*, I can also spray it indiscriminately over my problem domain.
+
+-----------
+
+For `F: D -> C` and `G: C -> D` functors between locally small categories `C` and `D`
+
+`F` and `G` are said to be *adjoint* with `F` *left adjoint* to `G` and `G` *right adjoint* to `F` iff there is a bijection `ϕ`, natural in `X` and `Y`:
+
+![](./assets/adjunction-bijection.png)
+
+-----------
+
+![The naturality of ϕ](./assets/adjunction-naturality.png)
+
+-----------
+
+The naturality of ϕ
+
+``` Haskell
+k: X -> X'
+h: Y -> Y'
+
+ϕ(k.f)  = Gk.ϕ(f)
+ϕ(f.Fh) = ϕ(f).h
+```
