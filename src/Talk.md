@@ -148,7 +148,7 @@ Adjunctions
 
 For `F: D -> C` and `G: C -> D` functors between locally small categories `C` and `D`
 
-`F` and `G` are said to be *adjoint* with `F` *left adjoint* to `G` and `G` *right adjoint* to `F` iff there is a bijection `ϕ`, natural in `X` and `Y`:
+`F` and `G` are said to be *adjoint* with `F` *left adjoint* to `G` and `G` *right adjoint* to `F` iff there is a bijection `ϕ`, natural in `X` and `Y`, any `X ∈ Obj(C)`, any `Y ∈ Obj(D)`:
 
 ![](./assets/adjunction-bijection.png)
 
@@ -166,4 +166,247 @@ h: Y -> Y'
 
 ϕ(k.f)  = Gk.ϕ(f)
 ϕ(f.Fh) = ϕ(f).h
+```
+Monads
+=======
+
+-------
+
+The adjunction holds `∀X ∈ Obj(C)` and `FY ∈ Obj(C)`, so what do we get if we substitute `FY` for `X`?
+
+``` Haskell
+C(FY, FY) ≅ D(Y, G(FY))
+```
+
+--------
+
+The only morphism we have that exists in all `C(FY, FY)` across all categories `C` would be the identity, so this is begging to be applied to the identity. Let's denote that `η = ϕ(id) :: Y -> G(FY)`.
+
+Similarly since `ϕ` is a bijection, lets apply it to `id ∈ D(GX, GX)` and keep that for later: `ε = ϕ^(-1)(id) :: F(G(X)) -> X`
+
+---------
+
+Hmm, `F, G` are Functors... so:
+
+``` Haskell
+μ = G(ε) :: G(F(G(F(Y)))) -> G(F(Y)) -- I've substituted FY for X
+δ = F(η) :: F(G(X)) -> F(G(F(G(X)))) -- I've substituted GX for Y
+```
+Recap
+-----
+
+``` Haskell
+η = ϕ(id) :: Y -> G(FY)
+ε = ϕ^(-1)(id) :: F(G(X)) -> X
+μ = G(ε) :: G(F(G(F(Y)))) -> G(F(Y))
+δ = F(η) :: F(G(X)) -> F(G(F(G(X))))
+```
+
+Recap
+-----
+
+Save myself some writing, denote `M = G . F`, `W = F . G`
+
+``` Haskell
+η = ϕ(id) :: Y -> MY        -- unit
+ε = ϕ^(-1)(id) :: WX -> X   -- counit
+μ = G(ε) :: M(M(Y)) -> MY   -- join
+δ = F(η) :: WX -> W(W(X))   -- duplicate
+```
+
+Left Identity
+-------------
+
+``` Haskell
+μ . η = G(ε).ϕ(id)
+μ . η = G(ϕ^(-1)(id)).ϕ(id)
+μ . η = ϕ(ϕ^(-1)(id) . id)  -- naturality
+μ . η = ϕ(ϕ^(-1)(id))
+μ . η = id
+```
+
+Right Identity
+--------------
+
+``` Haskell
+μ . GF(η) = G(ε).GF(η)
+μ . GF(η) = G(ε.F(η))
+μ . GF(η) = G(ϕ^(-1)(ϕ(ε.F(η))))
+μ . GF(η) = G(ϕ^(-1)(ϕ(ε).η))
+μ . GF(η) = G(ϕ^(-1)(ϕ(ϕ^(-1)(id)).η))
+μ . GF(η) = G(ϕ^(-1)(id.η))
+μ . GF(η) = G(ϕ^(-1)(η))
+μ . GF(η) = G(id)
+μ . GF(η) = id
+```
+
+Associativity
+-------------
+
+``` Haskell
+μ . GF(μ) = G(ε).GF(μ)
+μ . GF(μ) = G(ε.F(μ))
+μ . GF(μ) = G(ϕ^(-1)(ϕ(ε.F(μ))))
+μ . GF(μ) = G(ϕ^(-1)(ϕ(ε).μ))
+μ . GF(μ) = G(ϕ^(-1)(id.μ))
+μ . GF(μ) = G(ϕ^(-1)(μ))
+μ . GF(μ) = G(ϕ^(-1)(G(ε)))
+μ . GF(μ) = G(ϕ^(-1)(G(ε).id))
+μ . GF(μ) = G(ε.ϕ^(-1)(id))
+μ . GF(μ) = G(ε.ε)
+μ . GF(μ) = G(ε).G(ε)
+μ . GF(μ) = μ . μ
+```
+
+So M is a monad
+---------------
+
+W is a comonad
+--------------
+
+Err... an "Exercise"?
+
+Converse?
+---------
+
+Can all (co)monads be broken up into adjoint functor pairs?
+
+Yes, there are at least two such pairs that exist for all monads (and comonads).  They are kind of trivial constructions though, and involve "exotic" categories, so they are less useful to the Scala and Haskell programmers (Where you are stuck in `Hask` or whatever the Scala equivalent is):
+
+-   [The Kleisli Category](https://en.wikipedia.org/wiki/Kleisli_category)
+-   [Eilenberg-Moore algebras](https://en.wikipedia.org/wiki/Eilenberg%E2%80%93Moore_algebra)
+
+Universal Property
+------------------
+
+``` Haskell
+h :: Y -> GZ
+h = ϕ(k)        -- k = ϕ^(-1)(h) :: FY -> Z
+h = ϕ(k . id)
+h = Gk . ϕ(id)  -- naturality
+h = Gk . η
+```
+
+Uniqueness
+----------
+
+So all `h :: Y -> GZ` can be factorised. But is `k` unique?
+
+assume it isn't,
+
+``` Haskell
+k :: FY -> Z
+k' :: FY -> Z
+-- assume k, k' "distinct"
+(1) h = Gk . η and (2) h = Gk' . η
+(1) -> h = ϕ(k), and (2) -> h = ϕ(k') -- reverse the existence proof
+-- But ϕ is a bijection, so k = k', which contradicts the assumption
+```
+
+Universal Property
+------------------
+
+![general unit initial property](./assets/unit-universal-prop.png)
+
+------------------
+
+![slightly specialised unit initial property](./assets/monad-universal-prop.png)
+
+Context?
+--------
+
+-   The functor `F` represents the construction upon `Y` that represents this "context" thing that everyone talks about.
+-   As all operations of the form `Y -> MY'` can be reduced to functions of type `FY -> FY'`.
+-   The functor `G` represents the reverse direction, it represents the "problem" that you "want something in `FY` but lack the components to make the construction"
+
+Deferred Problems
+-----------------
+
+Monads lets us defer the construction problem. We can effectively pretend the problem doesn't exist.
+
+-   We can use `η` to get us into `G(FY)`
+-   Then `fmap` so that we can work inside `D(FY, FY')`, helping us pretend the problem doesn't exist.
+-   `μ` can let us "eliminate" the problem inside this fantasy land where it doesn't exist
+-   we can ignore the problem of `GX -> X` until such a time as we have what we need.
+
+This is why monads are so useful...
+
+Deferred Solutions
+------------------
+
+Comonads are the opposite:
+
+-   We have objects of `F(GX)`, we have a constructed solution around a value waiting for the stuff in `F`, just waiting to be unrolled with `ε`. At any time.
+
+Applications for this exist, but they seem harder to imagine...
+
+-------------
+
+Monads let us abstract away problems, comonads let us hold solutions for ransom.
+
+Monad Transformers
+------------------
+
+So now can we structurally decompose monads to embed others?
+
+For `F: D -> C` and `G: C -> D` functors between locally small categories `C` and `D`, if we have a monad `M: C -> C` is `G . M . F` a monad?
+
+Yes it is (Exercise)
+
+Examples
+========
+
+State Monad
+-----------
+
+This is the famous one, its pretty much the only one that can be broken up into two functors `Hask -> Hask`
+
+``` Haskell
+type F s a = (a, s)
+type G s a = s -> a
+ϕ = curry
+```
+
+-----------
+
+```
+curry :: ((a, b) -> c) -> a -> b -> c
+curry id :: a -> b -> (a, b)            -- unit
+uncurry id :: (b -> c, b) -> c          -- counit
+fmap (uncurry id) :: Functor f => f (b1 -> b, b1) -> f b    -- join
+```
+
+Continuation Monad
+------------------
+
+This is a unique example where the Functor leaves `Hask` and passes through `Hask^(op)` before coming back, it is adjoint to itself.
+
+``` Haskell
+type C r a = a -> r
+type Cont a = forall r. (a -> r) -> r ~ forall r. (C r (C r a))
+```
+
+-----------
+
+For `ϕ` we want a function:
+
+``` Haskell
+--  Hask ^(op)      |   Hask
+ϕ :: (C r a ~> b) -> (a -> C r b)
+ϕ :: (C r a <- b) -> (a -> C r b)
+ϕ :: (b -> C r a) -> (a -> C r b)
+ϕ :: (b -> (a -> r)) -> (a -> C r b)
+ϕ :: (b -> a -> r) -> (a -> (b -> r))
+ϕ :: (b -> a -> r) -> (a -> b -> r)
+ϕ = flip
+```
+
+Free Constructions
+------------------
+
+```
+F ~ Free Construction
+U ~ Forgetful functor
+ϕ :: (FY -> X) <-> (Y -> GZ)
+```
 ```
