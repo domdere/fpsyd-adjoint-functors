@@ -409,4 +409,8 @@ F ~ Free Construction
 U ~ Forgetful functor
 ϕ :: (FY -> X) <-> (Y -> GZ)
 ```
-```
+
+References
+==========
+
+TODO....
